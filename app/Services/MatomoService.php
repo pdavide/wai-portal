@@ -158,9 +158,6 @@ class MatomoService implements AnalyticsServiceContract
      *
      * @param string $siteUrl the site url of the website
      *
-     * @throws AnalyticsServiceException if unable to connect the Analytics Service
-     * @throws CommandErrorException if command is unsuccessful
-     *
      * @return array all the ids of all the sites
      */
     public function getSitesIdFromUrl(string $siteUrl): array
@@ -169,6 +166,27 @@ class MatomoService implements AnalyticsServiceContract
             'method' => 'SitesManager.getSitesIdFromSiteUrl',
             'token_auth' => $this->tokenAuth,
             'url' => $siteUrl,
+        ];
+
+        return $this->apiCall($params);
+    }
+
+    /**
+     * Get all Urls associated with the Analytics Service website ID.
+     *
+     * @param string $idSite the Analytics Service website ID
+     *
+     * @throws AnalyticsServiceException if unable to connect the Analytics Service
+     * @throws CommandErrorException if command is unsuccessful
+     *
+     * @return array all the urls
+     */
+    public function getSiteUrlsFromId(string $idSite): array
+    {
+        $params = [
+            'method' => 'SitesManager.getSiteUrlsFromId',
+            'idSite' => $idSite,
+            'token_auth' => $this->tokenAuth,
         ];
 
         return $this->apiCall($params);
@@ -645,6 +663,28 @@ class MatomoService implements AnalyticsServiceContract
         ];
 
         return $this->apiCall($params)['value'];
+    }
+
+    /**
+     * Get all widgets metadata.
+     *
+     * @param string $idSite the Analytics Service websites ID
+     *
+     * @throws CommandErrorException if command is unsuccessful
+     * @throws AnalyticsServiceException if unable to connect the Analytics Service
+     *
+     * @return array all widgets
+     */
+    public function getWidgetMetadata($idSite): ?array
+    {
+        $params = [
+            'method' => 'API.getWidgetMetadata',
+            'filter_limit' => '-1',
+            'deep' => '1',
+            'idSite' => $idSite,
+        ];
+
+        return $this->apiCall($params);
     }
 
     /**

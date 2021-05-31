@@ -22,9 +22,12 @@ trait HasWebsitePermissions
      */
     public function setNoAccessForWebsite(Website $website): void
     {
-        if (empty(request()->route('publicAdministration'))) {
+        $currentRequest = request();
+
+        if (empty($currentRequest->route('publicAdministration')) && is_null($currentRequest->publicAdministrationFromToken)) {
             $this->ensurePermissionScopeIsSet();
         }
+
         Bouncer::allow($this)->to(UserPermission::NO_ACCESS, $website);
         Bouncer::disallow($this)->to(UserPermission::READ_ANALYTICS, $website);
         Bouncer::disallow($this)->to(UserPermission::MANAGE_ANALYTICS, $website);
@@ -43,9 +46,12 @@ trait HasWebsitePermissions
      */
     public function setViewAccessForWebsite(Website $website): void
     {
-        if (empty(request()->route('publicAdministration'))) {
+        $currentRequest = request();
+
+        if (empty($currentRequest->route('publicAdministration')) && is_null($currentRequest->publicAdministrationFromToken)) {
             $this->ensurePermissionScopeIsSet();
         }
+
         Bouncer::allow($this)->to(UserPermission::READ_ANALYTICS, $website);
         Bouncer::disallow($this)->to(UserPermission::NO_ACCESS, $website);
         Bouncer::disallow($this)->to(UserPermission::MANAGE_ANALYTICS, $website);
@@ -64,9 +70,12 @@ trait HasWebsitePermissions
      */
     public function setWriteAccessForWebsite(Website $website): void
     {
-        if (empty(request()->route('publicAdministration'))) {
+        $currentRequest = request();
+
+        if (empty($currentRequest->route('publicAdministration')) && is_null($currentRequest->publicAdministrationFromToken)) {
             $this->ensurePermissionScopeIsSet();
         }
+
         Bouncer::allow($this)->to(UserPermission::READ_ANALYTICS, $website);
         Bouncer::allow($this)->to(UserPermission::MANAGE_ANALYTICS, $website);
         Bouncer::disallow($this)->to(UserPermission::NO_ACCESS, $website);
@@ -87,9 +96,10 @@ trait HasWebsitePermissions
      */
     public function syncWebsitesPermissionsToAnalyticsService(?PublicAdministration $publicAdministration = null): void
     {
-        if (!isset($publicAdministration)) {
-            $this->ensurePermissionScopeIsSet();
-            $publicAdministration = PublicAdministration::find(session('tenant_id'));
+        if (is_null($publicAdministration)) {
+            $publicAdministration = request()->is('api/*')
+                ? request()->publicAdministrationFromToken
+                : current_public_administration();
         }
 
         $publicAdministration->websites()->get()->map(function ($website) {

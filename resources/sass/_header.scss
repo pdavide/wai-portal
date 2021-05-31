@@ -60,6 +60,7 @@
       background: none;
       right: 0;
       left: auto;
+      max-height: 62px;
 
       &.super-admin {
         @include media-breakpoint-up(lg) {

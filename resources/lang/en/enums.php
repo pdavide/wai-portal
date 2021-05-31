@@ -3,6 +3,8 @@
 use App\Enums\Logs\EventType;
 use App\Enums\Logs\ExceptionType;
 use App\Enums\Logs\JobType;
+use App\Enums\CredentialPermission;
+use App\Enums\CredentialType;
 use App\Enums\PublicAdministrationStatus;
 use App\Enums\UserPermission;
 use App\Enums\UserRole;
@@ -109,6 +111,22 @@ return [
         WebsiteAccessType::VIEW => 'read-only access',
         WebsiteAccessType::WRITE => 'manage analytics access',
         WebsiteAccessType::ADMIN => 'admin access',
+    ],
+
+    CredentialType::class => [
+        CredentialType::ADMIN => 'admin',
+        CredentialType::ANALYTICS => 'analytics',
+    ],
+
+    CredentialPermission::class => [
+        CredentialPermission::READ => [
+            'short' => 'read',
+            'long' => "Read permission allows the query of the analytics API for read operations only.",
+        ],
+        CredentialPermission::WRITE => [
+            'short' => 'write',
+            'long' => "Write permission allows the query of the analytics API for both read and write operations.",
+        ],
     ],
 
     EventType::class => [

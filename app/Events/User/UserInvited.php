@@ -21,10 +21,10 @@ class UserInvited extends AbstractUserEvent
      * Create a new event instance.
      *
      * @param User $user the invited user
-     * @param User $invitedBy the user issuing the invitation
+     * @param User|null $invitedBy the user issuing the invitation or null if invited via API
      * @param PublicAdministration|null $publicAdministration the public administration selected for the invitation
      */
-    public function __construct(User $user, User $invitedBy, ?PublicAdministration $publicAdministration = null)
+    public function __construct(User $user, ?User $invitedBy = null, ?PublicAdministration $publicAdministration = null)
     {
         parent::__construct($user, $publicAdministration);
         $this->invitedBy = $invitedBy;
@@ -37,6 +37,6 @@ class UserInvited extends AbstractUserEvent
      */
     public function getInvitedBy(): User
     {
-        return $this->invitedBy;
+        return $this->invitedBy ?? '[API request]';
     }
 }

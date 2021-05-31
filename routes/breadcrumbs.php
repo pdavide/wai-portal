@@ -49,6 +49,12 @@ Breadcrumbs::for('analytics', function ($trail) {
     $trail->push(__('Analytics'), route('analytics'));
 });
 
+// Web Analytics Italia > API
+Breadcrumbs::for('show.swagger', function ($trail) {
+    $trail->parent('home');
+    $trail->push(__('API'), route('show.swagger'));
+});
+
 // Web Analytics Italia > Analytics > Logs view
 Breadcrumbs::for('logs.show', function ($trail) {
     $trail->parent('analytics');
@@ -77,6 +83,12 @@ Breadcrumbs::for('websites.create', function ($trail) {
 Breadcrumbs::for('websites.show', function ($trail, $website) {
     $trail->parent('websites.index');
     $trail->push($website->name ?? '', route('websites.show', ['website' => $website]));
+});
+
+// Web Analytics Italia > Anteprima widget
+Breadcrumbs::for('websites.show.widgets', function ($trail, $website) {
+    $trail->parent('websites.show', $website);
+    $trail->push(__('Anteprima widget'), route('websites.show.widgets', ['website' => $website]));
 });
 
 // Web Analytics Italia > Websites > [website->name] (edit)
@@ -239,4 +251,28 @@ Breadcrumbs::for('admin.publicAdministration.users.edit', function ($trail, $pub
 Breadcrumbs::for('websites.create.primary.custom', function ($trail) {
     $trail->parent('websites.index');
     $trail->push(__('Registra Pubblica Amministrazione'), route('websites.create.primary.custom'));
+});
+
+// Web Analytics Italia > Api Credentials
+Breadcrumbs::for('api-credentials.index', function ($trail) {
+    $trail->parent('home');
+    $trail->push(__('Credenziali API'), route('api-credentials.index'));
+});
+
+// Web Analytics Italia > Api Credentials > Add credential
+Breadcrumbs::for('api-credentials.create', function ($trail) {
+    $trail->parent('api-credentials.index');
+    $trail->push(__('Aggiungi credenziale'), route('api-credentials.create'));
+});
+
+// Web Analytics Italia > Api Credentials > [credential->client_name]
+Breadcrumbs::for('api-credentials.show', function ($trail, $credential) {
+    $trail->parent('api-credentials.index');
+    $trail->push(implode(' ', [$credential->client_name ?? '']), route('api-credentials.show', ['credential' => $credential]));
+});
+
+// Web Analytics Italia > Api Credentials > [credential->client_name] (edit)
+Breadcrumbs::for('api-credentials.edit', function ($trail, $credential) {
+    $trail->parent('api-credentials.index');
+    $trail->push(implode(' ', [$credential->client_name ?? '']), route('api-credentials.edit', ['credential' => $credential]));
 });

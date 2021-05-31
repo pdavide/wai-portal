@@ -74,7 +74,7 @@ class PendingWebsiteCheckJsonRoutesTest extends TestCase
         $this->user->allow(UserPermission::MANAGE_WEBSITES);
         $this->user->registerAnalyticsServiceAccount();
         $this->user->setWriteAccessForWebsite($this->website);
-        $this->user->syncWebsitesPermissionsToAnalyticsService();
+        $this->user->syncWebsitesPermissionsToAnalyticsService($this->publicAdministration);
 
         Event::fake();
     }
@@ -105,9 +105,8 @@ class PendingWebsiteCheckJsonRoutesTest extends TestCase
             ])
             ->json('get', route('websites.tracking.check', ['website' => $this->website->slug]));
 
-        $response->assertStatus(304);
-
-        $this->assertEmpty($response->getContent());
+        $response->assertStatus(303);
+        $response->assertExactJson([]);
     }
 
     /**

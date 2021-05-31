@@ -3,6 +3,8 @@
 use App\Enums\Logs\EventType;
 use App\Enums\Logs\ExceptionType;
 use App\Enums\Logs\JobType;
+use App\Enums\CredentialPermission;
+use App\Enums\CredentialType;
 use App\Enums\PublicAdministrationStatus;
 use App\Enums\UserPermission;
 use App\Enums\UserRole;
@@ -109,6 +111,22 @@ return [
         WebsiteAccessType::VIEW => 'sola lettura',
         WebsiteAccessType::WRITE => 'gestione analytics',
         WebsiteAccessType::ADMIN => 'amministrazione',
+    ],
+
+    CredentialType::class => [
+        CredentialType::ADMIN => 'amministrativa',
+        CredentialType::ANALYTICS => 'analytics',
+    ],
+
+    CredentialPermission::class => [
+        CredentialPermission::READ => [
+            'short' => 'lettura',
+            'long' => "Il permesso di lettura consente l'interrogazione delle API analytics per le sole operazioni di lettura.",
+        ],
+        CredentialPermission::WRITE => [
+            'short' => 'scrittura',
+            'long' => "Il permesso di scrittura consente l'interrogazione delle API analytics per le operazioni di lettura e di scrittura.",
+        ],
     ],
 
     EventType::class => [

@@ -39,6 +39,7 @@
                     <token key="LOG_SLACK_USERNAME_EXTRA_CHANNEL" value="${LOG_SLACK_USERNAME_EXTRA_CHANNEL}" />
                     <token key="APP_CLOSED_BETA_ENABLED" value="${APP_CLOSED_BETA_ENABLED}" />
                     <token key="APP_CUSTOM_PUBLIC_ADMINISTRATIONS_ENABLED" value="${APP_CUSTOM_PUBLIC_ADMINISTRATIONS_ENABLED}" />
+                    <token key="APP_API_VERSION" value="${APP_API_VERSION}" />
                     <token key="APP_SUPER_ADMIN_NAME" value="${APP_SUPER_ADMIN_NAME}" />
                     <token key="APP_SUPER_ADMIN_FAMILY_NAME" value="${APP_SUPER_ADMIN_FAMILY_NAME}" />
                     <token key="APP_SUPER_ADMIN_FISCAL_NUMBER" value="${APP_SUPER_ADMIN_FISCAL_NUMBER}" />
@@ -139,6 +140,11 @@
                     <token key="MATOMO_WAI_THEME_VERSION" value="${MATOMO_WAI_THEME_VERSION}" />
                     <token key="MATOMO_PLUGIN_SUPERUSERONLYRESTRICTIONS_VERSION" value="${MATOMO_PLUGIN_SUPERUSERONLYRESTRICTIONS_VERSION}" />
                     <token key="MATOMO_PLUGIN_SUPERUSERONLYRESTRICTIONS_ENABLED" value="${MATOMO_PLUGIN_SUPERUSERONLYRESTRICTIONS_ENABLED}" />
+                    <token key="MATOMO_WIDGETS_URL" value="${MATOMO_WIDGETS_URL}" />
+                    <token key="MATOMO_PLUGIN_UPDATEEXPOSEDFQDNLIST_VERSION" value="${MATOMO_PLUGIN_UPDATEEXPOSEDFQDNLIST_VERSION}" />
+                    <token key="MATOMO_PLUGIN_UPDATEEXPOSEDFQDNLIST_REDIS_HOST" value="${MATOMO_PLUGIN_UPDATEEXPOSEDFQDNLIST_REDIS_HOST}" />
+                    <token key="MATOMO_PLUGIN_UPDATEEXPOSEDFQDNLIST_REDIS_PORT" value="${MATOMO_PLUGIN_UPDATEEXPOSEDFQDNLIST_REDIS_PORT}" />
+                    <token key="MATOMO_PLUGIN_UPDATEEXPOSEDFQDNLIST_REDIS_DB_INDEX" value="${MATOMO_PLUGIN_UPDATEEXPOSEDFQDNLIST_REDIS_DB_INDEX}" />
                     <token key="MATOMO_PLUGIN_DISABLESITETRACKING_VERSION" value="${MATOMO_PLUGIN_DISABLESITETRACKING_VERSION}" />
                     <token key="MATOMO_PLUGIN_QUEUEDTRACKING_VERSION" value="${MATOMO_PLUGIN_QUEUEDTRACKING_VERSION}" />
                     <token key="MATOMO_PLUGIN_PROTECTTRACKID_VERSION" value="${MATOMO_PLUGIN_PROTECTTRACKID_VERSION}" />
@@ -148,6 +154,14 @@
                     <token key="MATOMO_PLUGIN_TRACKERHOSTNAME_VERSION" value="${MATOMO_PLUGIN_TRACKERHOSTNAME_VERSION}" />
                     <token key="MATOMO_PLUGIN_RESETDATABASE_VERSION" value="${MATOMO_PLUGIN_RESETDATABASE_VERSION}" />
                     <token key="MATOMO_INGESTION_HOSTNAME" value="${MATOMO_INGESTION_HOSTNAME}" />
+                    <token key="KONG_VERSION" value="${KONG_VERSION}" />
+                    <token key="KONG_ADMIN_API_URL" value="${KONG_ADMIN_API_URL}" />
+                    <token key="KONG_API_URL" value="${KONG_API_URL}" />
+                    <token key="KONG_API_PORTAL_BASE_PATH" value="${KONG_API_PORTAL_BASE_PATH}" />
+                    <token key="KONG_API_MATOMO_BASE_PATH" value="${KONG_API_MATOMO_BASE_PATH}" />
+                    <token key="POSTGRES_PASSWORD" value="${POSTGRES_PASSWORD}" />
+                    <token key="POSTGRES_USER" value="${POSTGRES_USER}" />
+                    <token key="POSTGRES_DATABASE" value="${POSTGRES_DATABASE}" />
                 </replacetokens>
             </filterchain>
         </copy>
@@ -551,6 +565,24 @@
         </if>
     </target>
 
+    <!-- Target: start Kong -->
+    <target name="kong">
+        <if>
+            <available file="containers" type="dir" property="ignored"/>
+            <then>
+                <echo msg="Starting kong API gateway..."/>
+                <echo msg="Waiting for postgres database to be ready..."/>
+                <exec command="docker-compose up -d postgres" dir="containers" passthru="true" checkreturn="true"/>
+                <retry retryDelay="5" retryCount="12">
+                    <exec command="docker-compose exec postgres psql -U ${POSTGRES_USER} -d ${POSTGRES_DATABASE} -c '\q'" dir="containers" checkreturn="true"/>
+                </retry>
+                <exec command="docker-compose up -d kong" dir="containers" passthru="true" checkreturn="true"/>
+                <exec command="docker-compose exec kong /kong-setup.sh" dir="containers" passthru="true" checkreturn="true"/>
+                <echo msg="Kong up and running!"/>
+            </then>
+        </if>
+    </target>
+
     <!-- Target: start phpMyAdmin -->
     <target name="pma">
         <if>
@@ -660,6 +692,10 @@
             --build-arg MATOMO_WAI_THEME_VERSION=${MATOMO_WAI_THEME_VERSION}
             --build-arg MATOMO_PLUGIN_SUPERUSERONLYRESTRICTIONS_VERSION=${MATOMO_PLUGIN_SUPERUSERONLYRESTRICTIONS_VERSION}
             --build-arg MATOMO_PLUGIN_SUPERUSERONLYRESTRICTIONS_ENABLED=${MATOMO_PLUGIN_SUPERUSERONLYRESTRICTIONS_ENABLED}
+            --build-arg MATOMO_PLUGIN_UPDATEEXPOSEDFQDNLIST_VERSION=${MATOMO_PLUGIN_UPDATEEXPOSEDFQDNLIST_VERSION}
+            --build-arg MATOMO_PLUGIN_UPDATEEXPOSEDFQDNLIST_REDIS_HOST=${MATOMO_PLUGIN_UPDATEEXPOSEDFQDNLIST_REDIS_HOST}
+            --build-arg MATOMO_PLUGIN_UPDATEEXPOSEDFQDNLIST_REDIS_PORT=${MATOMO_PLUGIN_UPDATEEXPOSEDFQDNLIST_REDIS_PORT}
+            --build-arg MATOMO_PLUGIN_UPDATEEXPOSEDFQDNLIST_REDIS_DB_INDEX=${MATOMO_PLUGIN_UPDATEEXPOSEDFQDNLIST_REDIS_DB_INDEX}
             --build-arg MATOMO_PLUGIN_DISABLESITETRACKING_VERSION=${MATOMO_PLUGIN_DISABLESITETRACKING_VERSION}
             --build-arg MATOMO_PLUGIN_QUEUEDTRACKING_VERSION=${MATOMO_PLUGIN_QUEUEDTRACKING_VERSION}
             --build-arg MATOMO_PLUGIN_PROTECTTRACKID_VERSION=${MATOMO_PLUGIN_PROTECTTRACKID_VERSION}

@@ -55,15 +55,15 @@ class StoreWebsiteRequest extends FormRequest
     public function withValidator(Validator $validator): void
     {
         $validator->after(function (Validator $validator) {
-            if (is_array($this->input('permissions')) && !$this->checkUsersIds($this->input('permissions'))) {
-                $validator->errors()->add('permissions', __('È necessario selezionare tutti i permessi correttamente'));
+            if (is_array($this->input('permissions')) && !$this->checkUsers($this->input('permissions'))) {
+                $validator->errors()->add('permissions', __('validation.errors.permissions'));
             }
         });
         $validator->after(function (Validator $validator) {
             if (filled($this->input('url'))) {
                 $host = parse_url($this->input('url'), PHP_URL_HOST);
                 if ($host && !$this->checkIsNotPrimary($host)) {
-                    $validator->errors()->add('url', __("L'indirizzo inserito appartiene a un'altra pubblica amministrazione."));
+                    $validator->errors()->add('url', __('validation.errors.url_public_administration'));
                 }
             }
         });
@@ -77,9 +77,17 @@ class StoreWebsiteRequest extends FormRequest
      *
      * @return bool true if the provided user permissions contains keys belonging to users in the current public administration, false otherwise
      */
-    protected function checkUsersIds(array $usersPermissions): bool
+    protected function checkUsers(array $usersPermissions): bool
     {
-        return empty(array_diff(array_keys($usersPermissions), request()->route('publicAdministration', current_public_administration())->users->pluck('id')->all()));
+        if ($this->is('api/*')) {
+            $currentPublicAdministration = $this->publicAdministrationFromToken;
+            $pluckField = 'fiscal_number';
+        } else {
+            $currentPublicAdministration = current_public_administration();
+            $pluckField = 'id';
+        }
+
+        return empty(array_diff(array_keys($usersPermissions), request()->route('publicAdministration', $currentPublicAdministration)->users->pluck($pluckField)->all()));
     }
 
     /**

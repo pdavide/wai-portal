@@ -38,6 +38,7 @@
         "stylelint-webpack-plugin": "^2.1.1",
         "throttle-debounce": "^3.0.1",
         "upper-case-first": "^2.0.2",
+        "swagger-ui": "^3.37.0",
         "vue-template-compiler": "^2.6.12"
     }
 }

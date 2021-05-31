@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use App\Enums\Logs\EventType;
 use App\Enums\Logs\ExceptionType;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Exceptions\InvalidSignatureException;
@@ -11,6 +12,8 @@ use Illuminate\Session\TokenMismatchException;
 use Italia\SPIDAuth\Exceptions\SPIDLoginAnomalyException;
 use Italia\SPIDAuth\Exceptions\SPIDLoginException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 /**
@@ -95,6 +98,21 @@ class Handler extends ExceptionHandler
                 'status' => 'error',
                 'icon' => 'it-close-circle',
             ]);
+        }
+
+        if (($exception instanceof ModelNotFoundException || $exception instanceof NotFoundHttpException)
+            && $request->expectsJson()) {
+            return response()->json([
+                'error' => 'not_found',
+                'error_description' => 'The requested resource cannot be found on this server',
+            ], 404);
+        }
+
+        if ($exception instanceof MethodNotAllowedHttpException && $request->expectsJson()) {
+            return response()->json([
+                'error' => 'method_not_allowed',
+                'error_description' => 'The http method used is not allowed for the requested resource',
+            ], 405);
         }
 
         return parent::render($request, $exception);

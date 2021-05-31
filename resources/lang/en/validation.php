@@ -117,6 +117,9 @@ return [
             'required' => 'Invalid User.',
             'exists' => 'Invalid User.',
         ],
+        'fiscal_number' => [
+            'invalid_format' => 'Invalid fiscal number format.'
+        ],
     ],
 
     /*
@@ -134,7 +137,7 @@ return [
         'name' => 'first name',
         'username' => 'user name',
         'family_name' => 'last name',
-        'fiscal_number' => 'fiscal code',
+        'fiscal_number' => 'fiscal number',
         'is_admin' => 'administrator user',
         'password' => 'password',
         'password_confirmation' => 'confirm password',
@@ -181,6 +184,13 @@ return [
         'end_date' => 'ending date',
         'start_time' => 'starting time',
         'end_time' => 'ending time',
+        'credential_name' => 'credentials name',
     ],
+    'errors' => [
+        'last_admin' => 'At least one administrator must be present for each public administration.',
+        'last_website_enabled' => "The user :user can't be removed because this is the last website for which it is enabled.",
+        'permissions' => 'All the permissions must be selected correctly.',
+        'url_public_administration' => 'The url entered belongs to another public administration.',
+    ]
 
 ];

@@ -39,7 +39,7 @@ class StoreUserRequest extends FormRequest
                 function ($attribute, $value, $fail) {
                     $chk = new FiscalNumberChecker($value);
                     if (!$chk->isFormallyValid()) {
-                        return $fail(__('Il codice fiscale non è formalmente valido.'));
+                        return $fail(__('validation.custom.fiscal_number.invalid_format'));
                     }
                 },
             ],
@@ -81,7 +81,7 @@ class StoreUserRequest extends FormRequest
 
         $validator->after(function (Validator $validator) {
             if (is_array($this->input('permissions')) && !$this->checkWebsitesIds($this->input('permissions'))) {
-                $validator->errors()->add('permissions', __('È necessario selezionare tutti i permessi correttamente'));
+                $validator->errors()->add('permissions', __('validation.errors.permissions'));
             }
         });
     }
@@ -96,6 +96,19 @@ class StoreUserRequest extends FormRequest
      */
     protected function checkWebsitesIds(array $websitesPermissions): bool
     {
-        return empty(array_diff(array_keys($websitesPermissions), request()->route('publicAdministration', current_public_administration())->websites->pluck('id')->all()));
+        if ($this->is('api/*')) {
+            $currentPublicAdministration = $this->publicAdministrationFromToken;
+            $pluckField = 'slug';
+        } else {
+            $currentPublicAdministration = current_public_administration();
+            $pluckField = 'id';
+        }
+
+        return empty(
+            array_diff(
+                array_keys($websitesPermissions),
+                request()->route('publicAdministration', $currentPublicAdministration)->websites->pluck($pluckField)->all()
+            )
+        );
     }
 }

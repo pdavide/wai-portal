@@ -14,6 +14,7 @@ import WebsiteArchiveUnarchive from './buttons/websiteArchiveUnarchive';
 import UserSuspendReactivate from './buttons/userSuspendReactivate';
 import UserDelete from './buttons/userDelete';
 import WebsiteDeleteRestore from './buttons/websiteDeleteRestore';
+import credentialDelete from './buttons/credentialDelete';
 import UserVerificationResend from './buttons/userVerificationResend';
 import GetJavascriptSnippet from './getJavascriptSnippet';
 import SearchIpa from './searchIpa';
@@ -23,7 +24,9 @@ import FaqSelector from './faqSelector';
 import WidgetResizer from './widgets';
 import HighlightBar from './highlightBar';
 import Trackers from './trackers';
-
+import Swagger from './swagger'
+import credentialPermissionsToggles from './credentialPermissionsToggles';
+import PreviewWidgets from './previewWidgets';
 
 $(() => {
     Forms.init();
@@ -38,14 +41,18 @@ $(() => {
     WidgetResizer.init();
     HighlightBar.init();
     Trackers.init();
+    Swagger.init();
+    PreviewWidgets.init();
     Datatables.init([
         datatableApi => LogsDatatables.preDatatableInit(datatableApi),
     ], [
         () => WebsiteCheckTracking.init(),
         () => UserAcceptInvitation.init(),
         () => PermissionsToggles.init(),
+        () => credentialPermissionsToggles.init(),
         () => WebsiteArchiveUnarchive.init(),
         () => WebsiteDeleteRestore.init(),
+        () => credentialDelete.init(),
         () => UserSuspendReactivate.init(),
         () => UserDelete.init(),
         () => UserSelectTenant.init(),

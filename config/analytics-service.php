@@ -7,4 +7,5 @@ return [
     'public_url' => env('ANALYTICS_PUBLIC_URL'),
     'public_dashboard' => env('ANALYTICS_PUBLIC_DASHBOARD_ID'),
     'cron_archiving_enabled' => env('ANALYTICS_CRON_ARCHIVING_ENABLED'),
+    'widgets_url' => env('MATOMO_WIDGETS_URL'),
 ];

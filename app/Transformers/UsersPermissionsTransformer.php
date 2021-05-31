@@ -22,12 +22,13 @@ class UsersPermissionsTransformer extends TransformerAbstract
      */
     public function transform(User $user): array
     {
-        $publicAdministration = request()->route('publicAdministration', current_public_administration());
+        $currentRequest = request();
+        $publicAdministration = $currentRequest->route('publicAdministration', current_public_administration());
 
-        return Bouncer::scope()->onceTo($publicAdministration->id, function () use ($user) {
-            $website = request()->route('website');
-            $readOnly = request()->has('readOnly');
-            $oldPermissions = request()->query('oldPermissions');
+        return Bouncer::scope()->onceTo($publicAdministration->id, function () use ($user, $currentRequest) {
+            $website = $currentRequest->route('website');
+            $readOnly = $currentRequest->has('readOnly');
+            $oldPermissions = $currentRequest->query('oldPermissions');
             $isAdmin = $user->isAn(UserRole::ADMIN);
             $canRead = $isAdmin || !is_array($oldPermissions) && isset($website) && $user->can(UserPermission::READ_ANALYTICS, $website);
             $canManage = $isAdmin || !is_array($oldPermissions) && isset($website) && $user->can(UserPermission::MANAGE_ANALYTICS, $website);

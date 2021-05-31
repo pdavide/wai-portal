@@ -87,6 +87,7 @@ class PublicAdministrationSelectorComposer
 
             $publicAdministrationShowSelector = true;
             $selectTenantUrl = route('admin.publicAdministrations.select');
+            $hasPublicAdministration = count($publicAdministrationSelectorArray) >= 1;
         } elseif ($authUser) {
             $publicAdministrationSelectorArray = $authUser->publicAdministrations()->get()
                 ->map(function ($publicAdministration) {
@@ -96,9 +97,11 @@ class PublicAdministrationSelectorComposer
                 })->sortBy('name')->values()->toArray();
 
             $publicAdministrationShowSelector = count($publicAdministrationSelectorArray) > 1;
+            $hasPublicAdministration = count($publicAdministrationSelectorArray) >= 1;
         } else {
             $publicAdministrationSelectorArray = [];
             $publicAdministrationShowSelector = false;
+            $hasPublicAdministration = false;
         }
 
         $view->with('publicAdministrationSelectorArray', $publicAdministrationSelectorArray);
@@ -106,5 +109,6 @@ class PublicAdministrationSelectorComposer
         $view->with('selectTenantUrl', $selectTenantUrl);
         $view->with('targetRoute', $targetRoute);
         $view->with('targetRouteHasPublicAdministrationParam', $targetRouteHasPublicAdministrationParam);
+        $view->with('hasPublicAdministration', $hasPublicAdministration);
     }
 }

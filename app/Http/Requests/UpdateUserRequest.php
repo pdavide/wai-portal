@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\UserPermission;
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
 use App\Models\User;
@@ -23,11 +24,14 @@ class UpdateUserRequest extends StoreUserRequest
         $rules = parent::rules();
         $rules['emailPublicAdministrationUser'] = 'required|email:rfc,dns|max:75';
 
-        if (!$this->route('user')->status->is(UserStatus::INVITED)) {
+        $user = ('api.users.update' === $this->route()->getName())
+          ? $this->userFromFiscalNumber
+          : $this->route('user');
+
+        if (!$user->status->is(UserStatus::INVITED)) {
             unset($rules['fiscal_number']);
         } else {
-            unset($rules['fiscal_number'][array_search('unique:users', $rules['fiscal_number'])]);
-            $rules['fiscal_number'][] = Rule::unique('users')->ignore($this->route('user')->id);
+            $rules['fiscal_number'][] = Rule::unique('users')->ignore($user->id);
         }
 
         return $rules;
@@ -40,8 +44,15 @@ class UpdateUserRequest extends StoreUserRequest
      */
     public function withValidator(Validator $validator): void
     {
-        $user = $this->route('user');
-        $publicAdministration = $this->route('publicAdministration', current_public_administration());
+        if (!$this->is('api/*')) {
+            $publicAdministration = $this->user()->can(UserPermission::ACCESS_ADMIN_AREA)
+                ? $this->route('publicAdministration')
+                : current_public_administration();
+            $user = $this->route('user');
+        } else {
+            $publicAdministration = $this->publicAdministrationFromToken;
+            $user = User::findNotSuperAdminByFiscalNumber($this->fn);
+        }
 
         $validator->after(function (Validator $validator) use ($user) {
             if (User::where('email', $this->input('email'))->where('id', '<>', $user->id)->whereDoesntHave('roles', function ($query) {
@@ -53,7 +64,7 @@ class UpdateUserRequest extends StoreUserRequest
 
         $validator->after(function (Validator $validator) use ($user, $publicAdministration) {
             if ($user->isTheLastActiveAdministratorOf($publicAdministration) && !$this->input('is_admin')) {
-                $validator->errors()->add('is_admin', __('Deve restare almeno un utente amministratore per ogni PA.'));
+                $validator->errors()->add('is_admin', __('validation.errors.last_admin'));
             }
         });
 

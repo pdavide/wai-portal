@@ -18,6 +18,9 @@
                         <h3>{{ $modal['title'] }}</h3>
                         <p>{!! nl2br($modal['message']) !!}</p>
                     </div>
+                    @isset($modal['afterMessage'])
+                    {!! $modal['afterMessage'] !!}
+                    @endisset
                     @isset($modal['image'])
                     <div class="col-sm-4 d-flex align-items-center justify-content-center">
                         <img src="{{ $modal['image'] }}" alt="">

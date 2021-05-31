@@ -38,6 +38,12 @@ required:
                   required:
                     name: "//str"
                     route: "//str"
+                  optional:
+                    requires:
+                      type: "//rec"
+                      required: 
+                        auth: "//bool"
+                        publicAdministration: "//bool"
           slim_header_links:
             type: "//arr"
             contents:
@@ -71,6 +77,11 @@ required:
                   optional:
                     route: "//str"
                     url: "//str"
+                    requires:
+                      type: "//rec"
+                      required: 
+                        auth: "//bool"
+                        publicAdministration: "//bool"
               secondary:
                 type: "//arr"
                 contents:

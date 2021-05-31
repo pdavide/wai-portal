@@ -12,7 +12,7 @@ export default (() => {
         return axios[method](button.getAttribute('href'))
             .then(response => success(response))
             .catch(error => {
-                if (error.response && error.response.status === 304) {
+                if (error.response && error.response.status === 303) {
                     notModified && notModified();
                     notModified || Notification.showNotification(I18n.t('operazione non effettuata'), I18n.t("L'azione richiesta è già stata effettuata."), 'info', 'it-info-circle');
                     Datatable.reload();

@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\PublicAdministration;
+use App\Models\User;
 
 if (!function_exists('current_public_administration')) {
     /**
@@ -11,8 +12,10 @@ if (!function_exists('current_public_administration')) {
     function current_public_administration(): ?PublicAdministration
     {
         $user = auth()->user();
+        $tenantId = session('tenant_id');
+
         if ($user) {
-            return $user->publicAdministrations()->where('id', session('tenant_id'))->first();
+            return $user->publicAdministrations()->where('id', $tenantId)->first();
         }
 
         return null;

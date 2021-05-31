@@ -29,6 +29,7 @@ return [
     */
 
     'version' => json_decode(file_get_contents(base_path('composer.json')))->version ?? '',
+    'api_version' => env('APP_API_VERSION', 'dev'),
 
     /*
     |--------------------------------------------------------------------------
@@ -195,6 +196,7 @@ return [
         /*
          * Application Service Providers...
          */
+        App\Providers\KongClientProvider::class,
         App\Providers\AnalyticsServiceProvider::class,
         App\Providers\SDGServiceProvider::class,
         App\Providers\AppServiceProvider::class,
@@ -261,6 +263,8 @@ return [
         'WebsiteStatus' => App\Enums\WebsiteStatus::class,
         'WebsiteType' => App\Enums\WebsiteType::class,
         'WebsiteAccessType' => App\Enums\WebsiteAccessType::class,
+        'CredentialPermission' => App\Enums\CredentialPermission::class,
+        'CredentialType' => App\Enums\CredentialType::class,
         'Logger' => Monolog\Logger::class,
         'EventType' => App\Enums\Logs\EventType::class,
         'JobType' => App\Enums\Logs\JobType::class,

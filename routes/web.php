@@ -190,6 +190,49 @@ Route::middleware('spid.auth', 'auth', 'verified:verification.notice')->group(fu
         Route::get('/analytics', 'AnalyticsController@index')
         ->name('analytics');
 
+        Route::get('/api', 'SwaggerController@index')
+        ->name('show.swagger');
+
+        Route::get('/api/specification', 'SwaggerController@apiSpecification')
+        ->name('show.swagger.specification');
+
+        Route::middleware('authorize.analytics:' . UserPermission::MANAGE_WEBSITES)->group(function () {
+            Route::prefix('/api-credentials')->group(function () {
+                Route::get('/', 'CredentialsController@index')
+                ->name('api-credentials.index');
+
+                Route::get('/create', 'CredentialsController@create')
+                ->name('api-credentials.create');
+
+                Route::post('/store', 'CredentialsController@store')
+                ->name('api-credentials.store');
+
+                Route::get('/data', 'CredentialsController@dataJson')
+                ->name('api-credentials.data.json');
+
+                Route::get('/data/permissions/{credential?}', 'CredentialsController@dataWebsitesPermissionsJson')
+                ->name('api-credentials.websites.permissions');
+
+                Route::get('/{credential}/show', 'CredentialsController@show')
+                ->name('api-credentials.show');
+
+                Route::get('/{credential}/regenerate', 'CredentialsController@regenerateCredential')
+                ->name('api-credentials.regenerate');
+
+                Route::get('/{credential}/show/json', 'CredentialsController@showJson')
+                ->name('api-credentials.show-json');
+
+                Route::get('/{credential}/edit', 'CredentialsController@edit')
+                ->name('api-credentials.edit');
+
+                Route::put('/{credential}', 'CredentialsController@update')
+                ->name('api-credentials.update');
+
+                Route::patch('/{credential}/delete', 'CredentialsController@delete')
+                ->name('api-credentials.delete');
+            });
+        });
+
         Route::middleware('authorize.analytics:' . UserPermission::VIEW_LOGS)->group(function () {
             Route::prefix('/logs')->group(function () {
                 Route::get('/', 'Logs\LogController@show')
@@ -234,6 +277,9 @@ Route::middleware('spid.auth', 'auth', 'verified:verification.notice')->group(fu
 
                 Route::put('/{website}', 'WebsiteController@update')
                 ->name('websites.update');
+
+                Route::get('/{website}/widgets/', 'WidgetsController@index')
+                ->name('websites.show.widgets');
 
                 Route::patch('/{website}/archive', 'WebsiteController@archive')
                 ->name('websites.archive');
@@ -286,6 +332,9 @@ Route::middleware('spid.auth', 'auth', 'verified:verification.notice')->group(fu
 
                 Route::get('/{user}/verification-resend', 'Auth\VerificationController@resend')
                 ->name('users.verification.resend')->middleware('throttle:5,1');
+
+                Route::get('/{user}/generate-credentials', 'UserController@generateCredentials')
+                ->name('users.generate.credentials');
             });
         });
 
@@ -412,6 +461,9 @@ Route::middleware('auth.admin', 'verified:admin.verification.notice')->group(fun
 
                     Route::get('/{user}/verification-resend', 'Auth\VerificationController@resend')
                         ->name('admin.publicAdministration.users.verification.resend')->middleware('throttle:5,1');
+
+                    Route::get('/{user}/generate-credentials', 'UserController@generateCredentials')
+                        ->name('admin.publicAdministration.users.generate.credentials');
                 });
 
                 Route::prefix('/websites')->group(function () {
@@ -473,7 +525,8 @@ Route::middleware('auth.admin', 'verified:admin.verification.notice')->group(fun
             ->name('admin.password.change');
     });
 });
-
-Route::fallback(function () {
-    return response()->view('errors.404');
-});
+if (!request()->is('api/*')) {
+    Route::fallback(function () {
+        return response()->view('errors.404');
+    });
+}

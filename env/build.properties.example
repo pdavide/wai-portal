@@ -18,6 +18,7 @@ APP_VERSION=0.1-alpha
 APP_DEBUG=true
 APP_CLOSED_BETA_ENABLED=false
 APP_CUSTOM_PUBLIC_ADMINISTRATIONS_ENABLED=false
+APP_API_VERSION=v1
 
 # Reset public playground
 # Value must be between 0 = Sunday and 6 = Saturday
@@ -232,6 +233,10 @@ MATOMO_PLUGIN_SUPERUSERONLYRESTRICTIONS_ENABLED=0
 MATOMO_PLUGIN_TRACKERHOSTNAME_VERSION=0.1.0
 MATOMO_PLUGIN_VISITORGENERATOR_VERSION=3.1.2
 MATOMO_PLUGIN_RESETDATABASE_VERSION=0.1.0
+MATOMO_PLUGIN_UPDATEEXPOSEDFQDNLIST_VERSION=0.0.1
+MATOMO_PLUGIN_UPDATEEXPOSEDFQDNLIST_REDIS_HOST=redis
+MATOMO_PLUGIN_UPDATEEXPOSEDFQDNLIST_REDIS_PORT=6379
+MATOMO_PLUGIN_UPDATEEXPOSEDFQDNLIST_REDIS_DB_INDEX=1
 
 # Matomo phpredis extension version
 MATOMO_PHPREDIS_VERSION=5.1.1
@@ -249,6 +254,9 @@ MATOMO_PUBLIC_ROLLUP_ID=
 # for matomo tracking ingestion
 MATOMO_INGESTION_HOSTNAME=
 
+# Matomo widgets iframe url
+MATOMO_WIDGETS_URL=https://localhost:9443
+
 # Analytics Service URLs
 # ----------------------
 
@@ -263,9 +271,8 @@ ANALYTICS_API_SSL_VERIFY=false
 # The public URL for your Analytics Service.
 ANALYTICS_PUBLIC_URL=https://localhost:9443
 
-
 # Single Digital Gateway Service Endpoint
-# ----------------------
+# ---------------------------------------
 
 SDG_API_PUBLIC_URL=
 SDG_API_SSL_VERIFY=false
@@ -304,3 +311,19 @@ XDEBUG_IDEKEY=
 # check the IP address of docker0 and adjust DOCKER_HOST_IP value
 # in your env-containers-* file to use dockerhost, if Docker host is Linux OS.
 XDEBUG_REMOTE_HOST=host.docker.internal
+
+# Kong Service
+# ------------
+
+KONG_VERSION=2.2.0
+KONG_ADMIN_API_URL=http://kong:8001
+KONG_API_URL=http://kong:8000
+KONG_API_PORTAL_BASE_PATH=portal
+KONG_API_MATOMO_BASE_PATH=matomo
+
+# Postgres for Kong
+# -----------------
+
+POSTGRES_PASSWORD=password.1
+POSTGRES_USER=kong
+POSTGRES_DATABASE=postgres

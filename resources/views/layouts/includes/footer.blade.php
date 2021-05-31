@@ -31,13 +31,39 @@
                 @if(config('site.footer_links.primary'))
                 <nav class="footer-primary-menu row justify-content-between mb-4">
                     @foreach (config('site.footer_links.primary') as $footerPrimaryMenuItem)
-                    <div class="p-2">
-                        <span class="nav-item">
-                            <a href="{{ isset($footerPrimaryMenuItem['route']) ? route($footerPrimaryMenuItem['route']) : $footerPrimaryMenuItem['url'] }}"
-                                {!! isset($footerPrimaryMenuItem['url']) ? 'class="external-link" target="_blank" rel="noopener noreferrer"' : '' !!}>
-                                {{ __($footerPrimaryMenuItem['name']) }}</a>
-                        </span>
-                    </div>
+                    @if (
+                                (
+                                    $footerPrimaryMenuItem &&
+                                    !array_key_exists('requires', $footerPrimaryMenuItem)
+                                )
+                                ||
+                                (
+                                    !$footerPrimaryMenuItem["requires"]["auth"]
+                                ) ||
+                                (
+                                    $footerPrimaryMenuItem["requires"]["auth"] &&
+                                    isset($authUser) && isset($spidAuthUser) &&
+                                    ( $authUser || $spidAuthUser ) && 
+                                    (
+                                        (
+                                            !$footerPrimaryMenuItem["requires"]["publicAdministration"]
+                                        ) ||
+                                        (
+                                            $footerPrimaryMenuItem["requires"]["publicAdministration"] &&
+                                            isset($hasPublicAdministration) && $hasPublicAdministration
+                                        )
+                                    )
+                                )
+                                )
+                                    <div class="p-2">
+                                        <span class="nav-item">
+                                            <a href="{{ isset($footerPrimaryMenuItem['route']) ? route($footerPrimaryMenuItem['route']) : $footerPrimaryMenuItem['url'] }}"
+                                                {!! isset($footerPrimaryMenuItem['url']) ? 'class="external-link" target="_blank" rel="noopener noreferrer"' : '' !!}>
+                                                {{ __($footerPrimaryMenuItem['name']) }}</a>
+                                        </span>
+                                    </div>
+                                @endif
+                    
                     @endforeach
                 </nav>
                 @endif

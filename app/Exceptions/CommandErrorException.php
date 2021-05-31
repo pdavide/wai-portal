@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use App\Enums\Logs\EventType;
 use App\Enums\Logs\ExceptionType;
+use App\Traits\SendsResponse;
 use Exception;
 use Illuminate\Http\RedirectResponse;
 
@@ -12,6 +13,8 @@ use Illuminate\Http\RedirectResponse;
  */
 class CommandErrorException extends Exception
 {
+    use SendsResponse;
+
     /**
      * Report the exception.
      */
@@ -30,18 +33,10 @@ class CommandErrorException extends Exception
     /**
      * Render the exception into an HTTP response.
      *
-     * @return \Illuminate\Http\RedirectResponse the response
+     * @return RedirectResponse|JsonResponse the response
      */
-    public function render(): RedirectResponse
+    public function render()
     {
-        return redirect()->home()->withNotification([
-            'title' => __('errore del server'),
-            'message' => implode("\n", [
-                __('Si è verificato un errore relativamente alla tua richiesta.'),
-                __('Puoi riprovare più tardi o :contact_support.', ['contact_support' => '<a href="' . route('contacts') . '">' . __('contattare il supporto tecnico') . '</a>']),
-            ]),
-            'status' => 'error',
-            'icon' => 'it-close-circle',
-        ]);
+        return $this->errorResponse('Anaytics command error', ExceptionType::ANALYTICS_COMMAND, 500);
     }
 }

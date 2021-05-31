@@ -55,7 +55,7 @@ class UpdateWebsiteRequest extends StoreWebsiteRequest
             $affectedUsers = $this->checkLastWebsiteForUsers($this->route('website'), $this->input('permissions'));
             if (!empty($affectedUsers)) {
                 $affectedUsers->map(function ($affectedUser) use ($validator) {
-                    $validator->errors()->add('permissions', __("Non è possibile disabiltare l'utente :user perché questo è l'unico sito per il quale è abilitato.", ['user' => $affectedUser->info]));
+                    $validator->errors()->add('permissions', __('validation.errors.last_website_enabled', ['user' => $affectedUser->info]));
                 });
             }
         });

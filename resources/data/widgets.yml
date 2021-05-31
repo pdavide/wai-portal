@@ -40,3 +40,11 @@ pa:
       it: Visite per modello di dispositivo
       en: Visits by device type
     url: index.php?module=Widgetize&action=iframe&disableLink=0&widget=1&moduleToWidgetize=DevicesDetection&actionToWidgetize=getModel&period=range&date=previous30&disableLink=1&widget=1&viewDataTable=graphPie
+allowed_widgets_preview:
+  # Widget uniqueId
+  - widgetVisitOverviewWithGraph
+  - widgetUserCountrygetRegion
+  - widgetLivegetSimpleLastVisitCount
+  - widgetVisitsSummarygetEvolutionGraphforceView1viewDataTablegraphEvolution
+  - widgetDevicesDetectiongetModel
+  - widgetReferrersgetSearchEngines

@@ -209,6 +209,28 @@
     @endcannot
     @endcomponent
     @endif
+
+    @if ($website->status->is(WebsiteStatus::ACTIVE))
+        {{-- Momentaneo - decidere se spostarlo --}}
+        @component('layouts.components.box')
+        <div>
+            <h4>{{__('Widgets')}}</h4>
+            <p>
+                {{ __('Puoi visitare la pagina dei ')}} 
+                <strong> {{ __("Widgets")}} </strong>
+                {{ __('che contiene la lista, l\'anteprima e il codice html dei widget da copiare e inserire nel sito dell\'amministrazione') }}
+            </p>
+            <a role="button" class="btn btn-sm btn-icon btn-outline-primary"
+                href="{{ route('websites.show.widgets', ['website' => $website]) }}">
+                {{ __('Vai alla pagina dei Widgets') }}
+                <svg class="icon icon-primary ml-2 align-middle">
+                    <use xlink:href="{{ asset('svg/sprite.svg#it-arrow-right') }}"></use>
+                </svg>
+            </a>
+        </div>
+        @endcomponent
+    @endif
+    
     @can(UserPermission::MANAGE_WEBSITES)
     @component('layouts.components.box', ['classes' => 'mt-0'])
     <h4 class="text-uppercase mb-5">{{ __('Permessi degli utenti') }}</h4>

@@ -72,7 +72,7 @@ class MetadataComposer
             ];
             $metaStructuredData['breadcrumbs'] = $breadcrumbs;
         }
-        switch ($this->request->route()->getName()) {
+        switch (optional($this->request->route())->getName()) {
             case 'faq':
                 $faqs = $this->getLocalizedYamlContent('faqs');
                 $items = [];

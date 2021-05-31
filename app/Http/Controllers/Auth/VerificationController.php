@@ -122,7 +122,7 @@ class VerificationController extends Controller
     protected function alreadyVerifiedUser(Request $request, User $user)
     {
         return $request->expectsJson()
-            ? response()->json(null, 304)
+            ? response()->json(null, 303)
             : redirect()->home()->withNotification([
                 'title' => __('verifica indirizzo email'),
                 'message' => __("L'indirizzo email :email è già stato verificato dall'utente.", ['email' => '<strong>' . e($user->email) . '</strong>']),

@@ -194,6 +194,8 @@ class CRUDAdminUserTest extends TestCase
                 'user_name' => e($user->full_name),
                 'status' => UserStatus::getKey(UserStatus::SUSPENDED),
                 'status_description' => UserStatus::getDescription(UserStatus::SUSPENDED),
+                'trashed' => $user->trashed(),
+                'administration' => null,
             ])
             ->assertOk();
 
@@ -221,7 +223,7 @@ class CRUDAdminUserTest extends TestCase
 
         $this->actingAs($this->user)
             ->json('patch', route('admin.users.suspend', ['user' => $user]))
-            ->assertStatus(304);
+            ->assertStatus(303);
 
         Event::assertNotDispatched(UserSuspended::class);
         Event::assertNotDispatched(UserUpdated::class);
@@ -238,7 +240,7 @@ class CRUDAdminUserTest extends TestCase
             ->assertJson([
                 'result' => 'error',
                 'message' => 'Invalid operation for current user',
-                'code' => 0,
+                'error_code' => 0,
             ]);
 
         Event::assertNotDispatched(UserSuspended::class);
@@ -285,7 +287,7 @@ class CRUDAdminUserTest extends TestCase
 
         $this->actingAs($this->user)
             ->json('patch', route('admin.users.reactivate', ['user' => $user]))
-            ->assertStatus(304);
+            ->assertStatus(303);
 
         Event::assertNotDispatched(UserReactivated::class);
         Event::assertNotDispatched(UserUpdated::class);
@@ -479,7 +481,7 @@ class CRUDAdminUserTest extends TestCase
             ]), [
                 '_token' => 'test',
                 'email' => 'new@webanalytics.italia.it',
-                'emailPublicAdministrationUser' => 'new@webanalytics.italia.it',
+                'emailPublicAdministrationUser' => 'updated@webanalytics.italia.it',
                 'fiscal_number' => $user->fiscal_number,
                 'is_admin' => '1',
                 'permissions' => [
@@ -496,7 +498,7 @@ class CRUDAdminUserTest extends TestCase
             $user = $event->getUser();
             $emailPublicAdministrationUser = $user->getEmailForPublicAdministration($publicAdministration);
 
-            return 'new@webanalytics.italia.it' === $emailPublicAdministrationUser;
+            return 'updated@webanalytics.italia.it' === $emailPublicAdministrationUser;
         });
 
         $user->deleteAnalyticsServiceAccount();
@@ -710,7 +712,7 @@ class CRUDAdminUserTest extends TestCase
                 'publicAdministration' => $publicAdministration,
                 'user' => $user,
             ]))
-            ->assertStatus(304);
+            ->assertStatus(303);
 
         Event::assertNotDispatched(UserUpdated::class);
     }
@@ -773,7 +775,7 @@ class CRUDAdminUserTest extends TestCase
             ->assertStatus(400)
             ->assertJson([
                 'result' => 'error',
-                'message' => 'invalid operation for current user status',
+                'message' => 'Invalid operation for current user status',
             ]);
 
         Event::assertNotDispatched(UserUpdated::class);
@@ -799,8 +801,8 @@ class CRUDAdminUserTest extends TestCase
                 'result' => 'ok',
                 'id' => $user->uuid,
                 'user_name' => e($user->full_name),
-                'status' => UserStatus::getKey(UserStatus::INVITED),
-                'status_description' => UserStatus::getDescription(UserStatus::INVITED),
+                'status' => UserStatus::getKey(UserStatus::ACTIVE),
+                'status_description' => UserStatus::getDescription(UserStatus::ACTIVE),
                 'administration' => $publicAdministration->name,
             ])
             ->assertOk();
@@ -808,7 +810,7 @@ class CRUDAdminUserTest extends TestCase
         Event::assertDispatched(UserUpdated::class, function ($event) use ($publicAdministration) {
             $statusPublicAdministrationUser = $event->getUser()->getStatusforPublicAdministration($publicAdministration);
 
-            return $statusPublicAdministrationUser->is(UserStatus::INVITED);
+            return $statusPublicAdministrationUser->is(UserStatus::ACTIVE);
         });
     }
 
@@ -828,7 +830,7 @@ class CRUDAdminUserTest extends TestCase
                 'publicAdministration' => $publicAdministration,
                 'user' => $user,
             ]))
-            ->assertStatus(304);
+            ->assertStatus(303);
 
         Event::assertNotDispatched(UserUpdated::class);
     }
@@ -887,8 +889,8 @@ class CRUDAdminUserTest extends TestCase
             ->assertStatus(400)
             ->assertJson([
                 'result' => 'error',
-                'message' => 'The last administrator cannot be removed or suspended.',
-                'code' => '0',
+                'message' => 'The last administrator cannot be removed or suspended',
+                'error_code' => '0',
             ]);
 
         Event::assertNotDispatched(UserDeleted::class);
@@ -918,7 +920,7 @@ class CRUDAdminUserTest extends TestCase
             ->assertStatus(400)
             ->assertJson([
                 'result' => 'error',
-                'message' => 'Pending users cannot be deleted.',
+                'message' => 'Pending users cannot be deleted',
             ]);
 
         Event::assertNotDispatched(UserDeleted::class);

@@ -1,0 +1,46 @@
+#main {
+  .swagger-ui {
+    font-family: $font-family-sans-serif;
+
+    pre,
+    span,
+    a,
+    div,
+    button,
+    h2,
+    h3,
+    h4,
+    select,
+    option,
+    td,
+    input,
+    p,
+    .model-title {
+      font-family: $font-family-sans-serif;
+    }
+
+    pre {
+      overflow: hidden;
+    }
+
+    .auth-wrapper {
+      display: none !important;
+    }
+
+    .model-box {
+      span,
+      td,
+      p {
+        font-family: $font-family-monospace;
+      }
+    }
+
+    .markdown p,
+    .markdown pre,
+    .renderedMarkdown p,
+    .renderedMarkdown pre {
+      margin: 0;
+      max-width: unset;
+    }
+  }
+}

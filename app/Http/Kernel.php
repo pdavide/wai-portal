@@ -80,6 +80,7 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'cron.auth' => \App\Http\Middleware\CronAuthenticate::class,
         'enforce.rules' => \App\Http\Middleware\EnforceRule::class,
+        'api.auth' => \App\Http\Middleware\AuthenticateApi::class,
     ];
 
     /**
@@ -91,7 +92,7 @@ class Kernel extends HttpKernel
      */
     protected $middlewarePriority = [
         \Illuminate\Session\Middleware\StartSession::class,
-        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+        /* \Illuminate\View\Middleware\ShareErrorsFromSession::class, */
         \App\Http\Middleware\ScopeBouncer::class,
         \Italia\SPIDAuth\Middleware::class,
         \App\Http\Middleware\Authenticate::class,
@@ -103,5 +104,6 @@ class Kernel extends HttpKernel
         \App\Http\Middleware\EnsurePasswordIsNotExpired::class,
         \App\Http\Middleware\SelectTenant::class,
         \App\Http\Middleware\AuthorizeAnalytics::class,
+        \App\Http\Middleware\AuthenticateApi::class,
     ];
 }

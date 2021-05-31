@@ -30,6 +30,7 @@ TODO
 .vscode
 .history
 .actrc
+code-review.csv
 
 # generated files
 .env
