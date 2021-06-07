@@ -1,5 +1,5 @@
 <?php
-
+/*
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -11,10 +11,10 @@ use Illuminate\Support\Facades\Route;
 | routes are loaded by the RouteServiceProvider within a group which
 | is assigned the "api" middleware group. Enjoy building your API!
 |
-*/
 
 Route::prefix(config('app.api_version'))->group(function () {
     Route::middleware('api.auth')->group(function () {
+
         Route::get('/', function () {
             return response()->json(['test' => getallheaders()], 200);
         });
@@ -23,7 +23,7 @@ Route::prefix(config('app.api_version'))->group(function () {
                 ->name('api.users');
             Route::post('/', 'UserController@storeApi')
                 ->name('api.users.store');
-            Route::get('/{fn}', 'UserController@showApi')
+        Route::get('/{fn}', 'UserController@showApi')
                 ->name('api.users.show');
             Route::put('/{fn}', 'UserController@updateApi')
                 ->name('api.users.update');
@@ -53,6 +53,9 @@ Route::prefix(config('app.api_version'))->group(function () {
                 ->name('api.websites.force');
             Route::get('/{website}/js-snippet', 'WebsiteController@showJavascriptSnippet')
                 ->name('api.websites.snippet.javascript');
+
         });
     });
 });
+
+*/

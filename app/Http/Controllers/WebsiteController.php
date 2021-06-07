@@ -915,7 +915,8 @@ class WebsiteController extends Controller
      */
     private function getWebsiteAPIUri(Website $website): string
     {
-        return config('kong-service.api_url') .
-            str_replace('/api/', '/portal/', route('api.websites.read', ['website' => $website], false));
+        return 'to-be-implemented';
+        // return config('kong-service.api_url') .
+            // str_replace('/api/', '/portal/', route('api.websites.read', ['website' => $website], false));
     }
 }
