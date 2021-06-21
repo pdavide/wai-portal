@@ -4,9 +4,11 @@ namespace Tests\Feature;
 
 use App\Enums\UserPermission;
 use App\Enums\UserRole;
+use App\Jobs\MonitorWebsitesTracking;
 use App\Jobs\ProcessPendingWebsites;
 use App\Jobs\ProcessPublicAdministrationsUpdateFromIpa;
-use App\Models\Website;
+use App\Jobs\ProcessUsersIndex;
+use App\Jobs\ProcessWebsitesIndex;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Bus;
 use Tests\TestCase;
@@ -19,20 +21,37 @@ class CommandsTest extends TestCase
     use RefreshDatabase;
 
     /**
+     * Pre-test setup.
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Bus::fake();
+    }
+
+    /**
      * Test check pending website command.
-     *
-     * @throws \App\Exceptions\AnalyticsServiceException if unable to connect to the Analytics Service
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException if unable to bind to Analytics Service
-     * @throws \GuzzleHttp\Exception\GuzzleException if unable to inject tracking request
-     * @throws \App\Exceptions\CommandErrorException if Analytics Service command finishes with error
      */
     public function testCheckPendingWebsites(): void
     {
-        Bus::fake();
-
         $this->artisan('app:check-websites');
 
-        Bus::assertDispatched(ProcessPendingWebsites::class);
+        Bus::assertDispatched(ProcessPendingWebsites::class, function ($job) {
+            return !$job->executePurgeCheck;
+        });
+
+        $this->artisan('app:check-websites -D');
+
+        Bus::assertDispatched(ProcessPendingWebsites::class, function ($job) {
+            return $job->executePurgeCheck;
+        });
+
+        $this->artisan('app:check-websites --execute-purge-check');
+
+        Bus::assertDispatched(ProcessPendingWebsites::class, function ($job) {
+            return $job->executePurgeCheck;
+        });
     }
 
     /**
@@ -72,6 +91,16 @@ class CommandsTest extends TestCase
     }
 
     /**
+     * Test active websites tracking check command.
+     */
+    public function testMonitorWebsiteTracking(): void
+    {
+        $this->artisan('app:monitor-activity');
+
+        Bus::assertDispatched(MonitorWebsitesTracking::class);
+    }
+
+    /**
      * Test update IPA command.
      */
     public function testUpdatePublicAdministrationsFromIpa(): void
@@ -81,5 +110,25 @@ class CommandsTest extends TestCase
         $this->artisan('app:update-ipa');
 
         Bus::assertDispatched(ProcessPublicAdministrationsUpdateFromIpa::class);
+    }
+
+    /**
+     * Test users index update command.
+     */
+    public function testUpdateUsersIndex(): void
+    {
+        $this->artisan('app:update-users');
+
+        Bus::assertDispatched(ProcessUsersIndex::class);
+    }
+
+    /**
+     * Test websites index update command.
+     */
+    public function testUpdateWebsitesIndex(): void
+    {
+        $this->artisan('app:update-websites');
+
+        Bus::assertDispatched(ProcessWebsitesIndex::class);
     }
 }

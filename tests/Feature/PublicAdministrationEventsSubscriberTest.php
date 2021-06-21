@@ -26,7 +26,6 @@ use App\Notifications\SuperAdminPublicAdministrationNotFoundInIpaEmail;
 use App\Services\MatomoService;
 use App\Traits\ManageRecipientNotifications;
 use Faker\Factory;
-use Faker\Generator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
@@ -646,6 +645,25 @@ class PublicAdministrationEventsSubscriberTest extends TestCase
             [$invitedSuperAdmin],
             SuperAdminPublicAdministrationNotFoundInIpaEmail::class
         );
+    }
+
+    /**
+     * Test public administration registered event handler.
+     */
+    public function testPublicAdministrationRegistered(): void
+    {
+        $user = factory(User::class)->create();
+
+        $this->expectLogMessage('notice', [
+            'User ' . $user->uuid . ' registered Public Administration ' . $this->publicAdministration->info,
+            [
+                'event' => EventType::PUBLIC_ADMINISTRATION_REGISTERED,
+                'pa' => $this->publicAdministration->ipa_code,
+                'user' => $user->uuid,
+            ],
+        ]);
+
+        event(new PublicAdministrationRegistered($this->publicAdministration, $user));
     }
 
     /**

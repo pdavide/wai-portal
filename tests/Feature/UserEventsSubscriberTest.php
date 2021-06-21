@@ -43,10 +43,18 @@ use Illuminate\Support\Facades\URL;
 use Silber\Bouncer\BouncerFacade as Bouncer;
 use Tests\TestCase;
 
+/**
+ * User events listener tests.
+ */
 class UserEventsSubscriberTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * The user.
+     *
+     * @var User the user
+     */
     private $user;
 
     protected function setUp(): void

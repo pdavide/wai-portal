@@ -41,6 +41,10 @@ final class WebsiteAccessType extends Enum implements LocalizedEnum
 
     /**
      * Get the website access type corresponding to the given user permission.
+     *
+     * @param string $userPermission the user permission
+     *
+     * @return int the user permission key value
      */
     public static function fromUserPermission(string $userPermission): int
     {

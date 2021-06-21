@@ -6,7 +6,6 @@ use App\Enums\Logs\JobType;
 use App\Events\Jobs\WebsiteIndexUpdateCompleted;
 use App\Models\Website;
 use App\Traits\InteractsWithRedisIndex;
-use Ehann\RediSearch\Index;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

@@ -6,6 +6,7 @@ use App\Enums\UserPermission;
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
 use App\Enums\WebsiteType;
+use App\Events\Website\WebsiteAdded;
 use App\Events\Website\WebsiteDeleted;
 use App\Events\Website\WebsiteRestored;
 use App\Models\PublicAdministration;
@@ -14,6 +15,7 @@ use App\Models\Website;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Str;
 use Silber\Bouncer\BouncerFacade as Bouncer;
 use Tests\TestCase;
 
@@ -106,6 +108,62 @@ class CRUDAdminWebsiteTest extends TestCase
             ->assertJsonFragment([
                 'raw' => e($this->website->name),
             ]);
+    }
+
+    /**
+     * Test website creation successful.
+     */
+    public function testStoreWebsiteSuccessful(): void
+    {
+        $this->actingAs($this->user)
+            ->from(route('admin.publicAdministration.websites.create', [
+                'publicAdministration' => $this->publicAdministration,
+            ]))
+            ->post(route('admin.publicAdministration.websites.store', [
+                'publicAdministration' => $this->publicAdministration,
+            ]), [
+                'website_name' => 'Sito tematico',
+                'url' => 'https://www.test.local',
+                'type' => WebsiteType::INFORMATIONAL,
+            ])
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('admin.publicAdministration.websites.index', [
+                'publicAdministration' => $this->publicAdministration,
+            ]));
+
+        $createdWebsite = Website::where('slug', Str::slug('https://www.test.local'))->first();
+        $this->app->make('analytics-service')->deleteSite($createdWebsite->analytics_id);
+
+        Event::assertDispatched(WebsiteAdded::class, function ($event) {
+            return $event->getWebsite()->slug === Str::slug('https://www.test.local');
+        });
+    }
+
+    /**
+     * Test website creation fail due to fields validation.
+     */
+    public function testStoreWebsiteFailValidation(): void
+    {
+        $this->actingAs($this->user)
+            ->from(route('admin.publicAdministration.websites.create', [
+                'publicAdministration' => $this->publicAdministration,
+            ]))
+            ->post(route('admin.publicAdministration.websites.store', [
+                'publicAdministration' => $this->publicAdministration,
+            ]), [
+                'url' => 'www.camera.it',
+                'type' => WebsiteType::INSTITUTIONAL,
+            ])
+            ->assertSessionHasErrors([
+                'website_name',
+                'url',
+                'type',
+            ])
+            ->assertRedirect(route('admin.publicAdministration.websites.create', [
+                'publicAdministration' => $this->publicAdministration,
+            ]));
+
+        Event::assertNotDispatched(WebsiteAdded::class);
     }
 
     /**
