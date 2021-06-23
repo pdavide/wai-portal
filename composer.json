@@ -34,7 +34,7 @@
     ],
     "require": {
         "php": "^7.4",
-        "bensampo/laravel-enum": "^1.25",
+        "bensampo/laravel-enum": "^2.2",
         "davidepastore/codice-fiscale": "^0.8.0",
         "diglactic/laravel-breadcrumbs": "^7.0",
         "doctrine/dbal": "^2.10",
